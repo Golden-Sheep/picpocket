@@ -13,6 +13,7 @@ use Picpocket\Transaction\Model\Transaction;
 use Picpocket\Transaction\Services\Exceptions\TransactionServiceException;
 use Picpocket\Wallet\Actions\WalletActionInterface;
 use Picpocket\Wallet\Model\Wallet;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class TransactionService
@@ -30,6 +31,7 @@ class TransactionService implements TransactionServiceInterface
         private readonly TransactionActionInterface $transactionAction,
         private readonly PaymentGatewayInterface    $picpayGatewayAPI,
         private readonly NotificationInterface      $picpayNotificationAPI,
+        private readonly LoggerInterface $logger
     )
     {
     }
@@ -39,31 +41,53 @@ class TransactionService implements TransactionServiceInterface
      */
     public function handle(CreateTransactionDTO $transactionDTO): bool
     {
-        // Initial validations
-        $payerWallet = $this->walletAction->findById($transactionDTO->payerId);
-        $this->validatePaymentConditions($payerWallet, $transactionDTO);
+        try {
+            $this->logger->info('Starting transaction process', ['transactionDTO' => $transactionDTO]);
+            // Initial validations
+            $payerWallet = $this->walletAction->findById($transactionDTO->payerId);
+            $this->validatePaymentConditions($payerWallet, $transactionDTO);
 
-        // Execute the database transaction
-        return DB::transaction(function () use ($payerWallet, $transactionDTO) {
-            $payeeWallet = $this->walletAction->findById($transactionDTO->payeeId);
+            // Execute the database transaction
+            return DB::transaction(function () use ($payerWallet, $transactionDTO) {
+                $payeeWallet = $this->walletAction->findById($transactionDTO->payeeId);
 
-            // Start the transaction
-            $transaction = $this->createTransaction($transactionDTO);
+                // Start the transaction
+                $transaction = $this->createTransaction($transactionDTO);
 
-            // Perform financial operations
-            $this->processTransaction($payerWallet, $payeeWallet, $transactionDTO->amount);
+                // Perform financial operations
+                $this->processTransaction($payerWallet, $payeeWallet, $transactionDTO->amount);
 
-            // Update transaction status
-            $this->completeTransaction($transaction);
+                // Update transaction status
+                $this->completeTransaction($transaction);
 
-            // Authorize external payment
-            $this->authorizePayment();
+                // Authorize external payment
+                $this->authorizePayment();
 
-            // Send notification
-            $this->sendPaymentNotification();
+                // Send notification
+                $this->sendPaymentNotification();
 
-            return true;
-        });
+                return true;
+            });
+        } catch (TransactionServiceException $e) {
+            // Log specific exceptions related to transactions
+            $this->logger->error('Transaction failed', [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'transactionDTO' => $transactionDTO
+            ]);
+
+            throw $e;
+        } catch (\Exception $e) {
+            // Log unexpected exceptions
+            $this->logger->error('An unexpected error occurred during the transaction', [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'transactionDTO' => $transactionDTO
+            ]);
+
+            // Rethrow the exception to escalate or handle gracefully
+            throw $e;
+        }
     }
 
     /**
@@ -85,7 +109,9 @@ class TransactionService implements TransactionServiceInterface
      */
     private function createTransaction(CreateTransactionDTO $transactionDTO): Transaction
     {
-        return $this->transactionAction->startTransaction($transactionDTO);
+        $transaction = $this->transactionAction->startTransaction($transactionDTO);
+        $this->logger->info('Transaction created', ['transactionId' => $transaction->getKey()]);
+        return $transaction;
     }
 
     /**
@@ -95,6 +121,12 @@ class TransactionService implements TransactionServiceInterface
     {
         $this->walletAction->deposit($payeeWallet->getKey(), $amount);
         $this->walletAction->withdraw($payerWallet->getKey(), $amount);
+
+        $this->logger->info('Transaction processed', [
+            'payerId' => $payerWallet->getKey(),
+            'payeeId' => $payeeWallet->getKey(),
+            'amount' => $amount,
+        ]);
     }
 
     /**
@@ -103,6 +135,7 @@ class TransactionService implements TransactionServiceInterface
     private function completeTransaction(Transaction $transaction): void
     {
         $this->transactionAction->updateTransactionStatus($transaction->getKey(), TransactionStatusEnum::Completed);
+        $this->logger->info('Transaction marked as completed', ['transactionId' => $transaction->getKey()]);
     }
 
     /**
@@ -113,6 +146,7 @@ class TransactionService implements TransactionServiceInterface
         if (!$this->picpayGatewayAPI->authorizePayment()) {
             throw TransactionServiceException::notAuthorizedByGateway($this->picpayGatewayAPI);
         }
+        $this->logger->info('Payment authorized');
     }
 
     /**
@@ -123,5 +157,6 @@ class TransactionService implements TransactionServiceInterface
         if (!$this->picpayNotificationAPI->sendNotificationPayment()) {
             throw TransactionServiceException::paymentMessageNotSent($this->picpayNotificationAPI);
         }
+        $this->logger->info('Notification sent');
     }
 }

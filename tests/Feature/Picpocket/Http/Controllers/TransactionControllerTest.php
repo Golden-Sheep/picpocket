@@ -3,6 +3,9 @@
 namespace Tests\Feature\Picpocket\Http\Controllers;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Mockery;
+use Picpocket\Api\External\PaymentGateways\PaymentGatewayInterface;
+use Picpocket\Notifications\Api\External\NotificationInterface;
 use Picpocket\Transaction\Enums\TransactionStatusEnum;
 use Picpocket\Wallet\Model\Wallet;
 use Tests\TestCase;
@@ -27,25 +30,37 @@ class TransactionControllerTest extends TestCase
      */
     public function testPostPayment()
     {
+        // Arrange: Create mocks for external dependencies
+        $picpayGatewayMock = Mockery::mock(PaymentGatewayInterface::class);
+        $picpayGatewayMock->shouldReceive('authorizePayment')
+            ->once()
+            ->andReturn(true);
 
-        $payer = Wallet::factory()->customer()->create([
-            'balance' => 10_00
-        ]);
+        $picpayNotificationMock = Mockery::mock(NotificationInterface::class);
+        $picpayNotificationMock->shouldReceive('sendNotificationPayment')
+            ->once()
+            ->andReturn(true);
 
-        $payee = Wallet::factory()->customer()->create([
-            'balance' => 10_00
-        ]);
+        // Replace mocked instances in the Laravel container
+        $this->app->instance(PaymentGatewayInterface::class, $picpayGatewayMock);
+        $this->app->instance(NotificationInterface::class, $picpayNotificationMock);
 
+        // Arrange: Create payer and payee wallets with initial balances
+        $payer = Wallet::factory()->customer()->create(['balance' => 10_00]);
+        $payee = Wallet::factory()->customer()->create(['balance' => 10_00]);
         $amount = 5_00;
 
+        // Act: Make the POST request to perform the transaction
         $response = $this->postJson(route('transactions.store'), [
             'payer_id' => $payer->getKey(),
             'payee_id' => $payee->getKey(),
-            'amount' => $amount
+            'amount' => $amount,
         ]);
 
+        // Assert: Verify the response and database state
         $response->assertNoContent();
 
+        // Check if the transaction was recorded
         $this->assertDatabaseHas('transactions', [
             'wallet_from_id' => $payer->getKey(),
             'wallet_to_id' => $payee->getKey(),
@@ -53,6 +68,7 @@ class TransactionControllerTest extends TestCase
             'status' => TransactionStatusEnum::Completed,
         ]);
 
+        // Check if balances were updated correctly
         $this->assertDatabaseHas('wallets', [
             'id' => $payer->getKey(),
             'balance' => 5_00,
@@ -62,5 +78,14 @@ class TransactionControllerTest extends TestCase
             'id' => $payee->getKey(),
             'balance' => 15_00,
         ]);
+    }
+
+    /**
+     * Cleanup Mockery after each test.
+     */
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }

@@ -18,8 +18,6 @@ class CreateTransactionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return true
      */
     public function authorize(): true
     {
@@ -28,22 +26,18 @@ class CreateTransactionRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules(): array
     {
         return [
             'payer_id' => ['required', 'exists:wallets,id'],
             'payee_id' => ['required', 'exists:wallets,id'],
-            'amount' => ['required', 'integer']
+            'amount' => ['required', 'integer'],
         ];
     }
 
     /**
      * Transform the request data into a CreateTransactionDTO instance.
-     *
-     * @return CreateTransactionDTO
      */
     public function toDTO(): CreateTransactionDTO
     {

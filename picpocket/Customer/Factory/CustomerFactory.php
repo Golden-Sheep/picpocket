@@ -19,14 +19,12 @@ class CustomerFactory extends Factory
     /**
      * The name of the model corresponding to the factory.
      *
-     * @var string
+     * @var class-string<\Picpocket\Customer\Model\Customer>
      */
     protected $model = Customer::class;
 
     /**
      * Define the default state of the Customer model.
-     *
-     * @return array
      */
     public function definition(): array
     {

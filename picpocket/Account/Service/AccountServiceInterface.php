@@ -20,8 +20,9 @@ interface AccountServiceInterface
      * This method checks if an account is classified as a retailer by using
      * the cached account type or fetching it from the data source if not cached.
      *
-     * @param string $accountId The unique identifier of the account.
+     * @param  string  $accountId  The unique identifier of the account.
      * @return bool True if the account is a retailer, false otherwise.
+     *
      * @throws \Exception If the account is not found.
      */
     public function isAccountRetailer(string $accountId): bool;

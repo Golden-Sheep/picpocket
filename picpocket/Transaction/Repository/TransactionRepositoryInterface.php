@@ -19,17 +19,12 @@ interface TransactionRepositoryInterface
 {
     /**
      * Initiates a new transaction.
-     *
-     * @param CreateTransactionDTO $payload
-     * @return Transaction
      */
     public function startTransaction(CreateTransactionDTO $payload): Transaction;
 
     /**
      * Updates the status of an existing transaction.
      *
-     * @param string $transactionId
-     * @param TransactionStatusEnum $status
      * @return bool Indicates whether the update was successful.
      */
     public function updateTransactionStatus(string $transactionId, TransactionStatusEnum $status): bool;

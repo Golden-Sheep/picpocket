@@ -18,12 +18,10 @@ class WalletRepository implements WalletRepositoryInterface
     /**
      * WalletRepository constructor.
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function findById(string $walletId): Wallet
     {
@@ -31,22 +29,26 @@ class WalletRepository implements WalletRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function deposit(string $walletId, int $amount): bool
     {
-        return Wallet::query()
-            ->find($walletId)
+        $affectedRows = Wallet::query()
+            ->where('id', $walletId)
             ->increment('balance', $amount);
+
+        return $affectedRows > 0;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function withdraw(string $walletId, int $amount): bool
     {
-        return Wallet::query()
+        $affectedRows = Wallet::query()
             ->find($walletId)
             ->decrement('balance', $amount);
+
+        return $affectedRows > 0;
     }
 }

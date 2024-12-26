@@ -17,27 +17,24 @@ interface LoggerServiceInterface
     /**
      * Log a message at the INFO level.
      *
-     * @param string $message The message to log.
-     * @param array $context Additional context to include with the log entry.
-     * @return void
+     * @param  string  $message  The message to log.
+     * @param  array  $context  Additional context to include with the log entry.
      */
     public function info(string $message, array $context = []): void;
 
     /**
      * Log a message at the ERROR level.
      *
-     * @param string $message The message to log.
-     * @param array $context Additional context to include with the log entry.
-     * @return void
+     * @param  string  $message  The message to log.
+     * @param  array  $context  Additional context to include with the log entry.
      */
     public function error(string $message, array $context = []): void;
 
     /**
      * Log a message at the DEBUG level.
      *
-     * @param string $message The message to log.
-     * @param array $context Additional context to include with the log entry.
-     * @return void
+     * @param  string  $message  The message to log.
+     * @param  array  $context  Additional context to include with the log entry.
      */
     public function debug(string $message, array $context = []): void;
 }

@@ -33,7 +33,7 @@ class PayamentGatewayProvider extends ServiceProvider
     protected function bindPayamentGateway()
     {
         $this->app->bind(PaymentGatewayInterface::class, function () {
-            return (new PicpayGatewayFactory())();
+            return (new PicpayGatewayFactory)();
         });
     }
 }

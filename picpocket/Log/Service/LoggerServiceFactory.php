@@ -15,11 +15,9 @@ class LoggerServiceFactory
 {
     /**
      * Creates a new instance of the LoggerService.
-     *
-     * @return LoggerService
      */
     public function __invoke(): LoggerService
     {
-        return new LoggerService();
+        return new LoggerService;
     }
 }

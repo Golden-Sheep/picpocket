@@ -20,14 +20,12 @@ class WalletFactory extends Factory
     /**
      * The name of the model corresponding to the factory.
      *
-     * @var string
+     * @var class-string<Wallet>
      */
     protected $model = Wallet::class;
 
     /**
      * Define the default state of the Wallet model.
-     *
-     * @return array
      */
     public function definition(): array
     {
@@ -41,27 +39,25 @@ class WalletFactory extends Factory
 
     /**
      * Define the state for a wallet associated with a customer account.
-     *
-     * @return static
      */
     public function customer(): static
     {
-        $account = Account::factory()->pf()->create();
-        return $this->state(fn (array $attributes) => [
-            'account_id' => $account->id
+        $account = Account::factory()->setPf()->create();
+
+        return $this->state(fn () => [
+            'account_id' => $account->id,
         ]);
     }
 
     /**
      * Define the state for a wallet associated with a retailer account.
-     *
-     * @return static
      */
     public function retailer(): static
     {
-        $account = Account::factory()->pj()->create();
-        return $this->state(fn (array $attributes) => [
-            'account_id' => $account->id
+        $account = Account::factory()->setPj()->create();
+
+        return $this->state(fn () => [
+            'account_id' => $account->id,
         ]);
     }
 }

@@ -5,7 +5,7 @@ namespace Picpocket\Notifications\Api\External;
 /**
  * Class PicpayNotificationServiceFactory
  *
- * Factory for creating instances of the PicpayNotificationService class.
+ * Factory for creating instances of the PicpayNotificationServiceService class.
  *
  * Author: Victor Silva
  * Email: dev.jvictor@gmail.com
@@ -14,12 +14,10 @@ namespace Picpocket\Notifications\Api\External;
 class PicpayNotificationServiceFactory
 {
     /**
-     * Creates a new instance of the PicpayNotificationService.
-     *
-     * @return PicpayNotificationService
+     * Creates a new instance of the PicpayNotificationServiceService.
      */
-    public function __invoke(): PicpayNotificationService
+    public function __invoke(): PicpayNotificationServiceService
     {
-        return new PicpayNotificationService();
+        return new PicpayNotificationServiceService;
     }
 }

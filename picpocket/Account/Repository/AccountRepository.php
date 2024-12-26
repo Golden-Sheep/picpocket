@@ -20,7 +20,7 @@ use Picpocket\Account\Model\Account;
 class AccountRepository implements AccountRepositoryInterface
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function findById(string $accountId): Account
     {

@@ -18,16 +18,13 @@ class WalletAction implements WalletActionInterface
 {
     /**
      * WalletAction constructor.
-     *
-     * @param WalletRepositoryInterface $walletRepository
      */
     public function __construct(
         private readonly WalletRepositoryInterface $walletRepository
-    ) {
-    }
+    ) {}
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function deposit(string $walletId, int $amount): bool
     {
@@ -35,7 +32,7 @@ class WalletAction implements WalletActionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function withdraw(string $walletId, int $amount): bool
     {
@@ -43,9 +40,9 @@ class WalletAction implements WalletActionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function findById(string $walletId): Wallet
+    public function findById(string $walletId): ?Wallet
     {
         return $this->walletRepository->findById($walletId);
     }

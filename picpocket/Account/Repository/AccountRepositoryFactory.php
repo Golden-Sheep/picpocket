@@ -26,6 +26,6 @@ class AccountRepositoryFactory
     public function __invoke(): AccountRepository
     {
         // Return a new instance of AccountRepository
-        return new AccountRepository();
+        return new AccountRepository;
     }
 }

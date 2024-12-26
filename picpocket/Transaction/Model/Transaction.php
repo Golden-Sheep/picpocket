@@ -44,7 +44,7 @@ class Transaction extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'id',
@@ -53,17 +53,17 @@ class Transaction extends Model
         'amount',
         'status',
         'description',
-        'transaction_date'
+        'transaction_date',
     ];
 
     /**
      * The attributes that should be cast to native types.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'amount' => 'integer',
-        'transaction_date' => 'datetime'
+        'transaction_date' => 'datetime',
     ];
 
     /**

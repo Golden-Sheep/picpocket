@@ -20,12 +20,10 @@ class TransactionRepository implements TransactionRepositoryInterface
     /**
      * TransactionRepository constructor.
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function startTransaction(CreateTransactionDTO $payload): Transaction
     {
@@ -38,12 +36,12 @@ class TransactionRepository implements TransactionRepositoryInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function updateTransactionStatus(string $transactionId, TransactionStatusEnum $status): bool
     {
         return Transaction::query()->find($transactionId)->update([
-            'status' => $status
+            'status' => $status,
         ]);
     }
 }

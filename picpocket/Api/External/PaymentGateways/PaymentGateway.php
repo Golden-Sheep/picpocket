@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Http;
 class PaymentGateway implements PaymentGatewayInterface
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getGatewayName(): string
     {
@@ -24,11 +24,12 @@ class PaymentGateway implements PaymentGatewayInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function authorizePayment(): bool
     {
         $request = Http::get('https://util.devi.tools/api/v2/authorize')->json();
+
         return $request['status'] == 'success';
     }
 }

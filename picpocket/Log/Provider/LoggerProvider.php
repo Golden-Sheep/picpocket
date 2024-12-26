@@ -41,7 +41,7 @@ class LoggerProvider extends ServiceProvider
     protected function bindLoggerService()
     {
         $this->app->bind(LoggerService::class, function () {
-            return (new LoggerServiceFactory())();
+            return (new LoggerServiceFactory)();
         });
     }
 }

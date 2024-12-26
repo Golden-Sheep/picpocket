@@ -15,11 +15,9 @@ class CacheServiceFactory
 {
     /**
      * Creates a new instance of the CacheService.
-     *
-     * @return CacheService
      */
     public function __invoke(): CacheService
     {
-        return new CacheService();
+        return new CacheService;
     }
 }

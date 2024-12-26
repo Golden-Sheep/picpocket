@@ -25,8 +25,6 @@ class LoggerService implements LoggerServiceInterface
 {
     /**
      * A unique token to track logs in the same workflow.
-     *
-     * @var string
      */
     private string $logToken;
 
@@ -41,7 +39,7 @@ class LoggerService implements LoggerServiceInterface
     /**
      * Log a message at the INFO level.
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function info(string $message, array $context = []): void
     {
@@ -51,7 +49,7 @@ class LoggerService implements LoggerServiceInterface
     /**
      * Log a message at the ERROR level.
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function error(string $message, array $context = []): void
     {
@@ -61,7 +59,7 @@ class LoggerService implements LoggerServiceInterface
     /**
      * Log a message at the DEBUG level.
      *
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function debug(string $message, array $context = []): void
     {
@@ -71,19 +69,18 @@ class LoggerService implements LoggerServiceInterface
     /**
      * Adds the log token to the context.
      *
-     * @param array $context The original context.
+     * @param  array  $context  The original context.
      * @return array The updated context with the log token.
      */
     private function addLogTokenToContext(array $context): array
     {
         $context['log_token'] = $this->logToken;
+
         return $context;
     }
 
     /**
      * Get the unique log token.
-     *
-     * @return string
      */
     public function getLogToken(): string
     {

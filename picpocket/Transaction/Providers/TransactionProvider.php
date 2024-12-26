@@ -41,7 +41,7 @@ class TransactionProvider extends ServiceProvider
     protected function bindTransactionService()
     {
         $this->app->bind(TransactionServiceInterface::class, function () {
-            return (new TransactionServiceFactory())();
+            return (new TransactionServiceFactory)();
         });
     }
 
@@ -53,7 +53,7 @@ class TransactionProvider extends ServiceProvider
     protected function bindActionService()
     {
         $this->app->bind(TransactionActionInterface::class, function () {
-            return (new TransactionActionFactory())();
+            return (new TransactionActionFactory)();
         });
     }
 
@@ -65,7 +65,7 @@ class TransactionProvider extends ServiceProvider
     protected function bindTransactionRepository()
     {
         $this->app->bind(TransactionRepositoryInterface::class, function () {
-            return (new TransactionRepositoryFactory())();
+            return (new TransactionRepositoryFactory)();
         });
     }
 }

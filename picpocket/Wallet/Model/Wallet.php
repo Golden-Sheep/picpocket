@@ -5,7 +5,6 @@ namespace Picpocket\Wallet\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use PicPocket\Account\Enums\AccountTypeEnum;
 use Picpocket\Account\Model\Account;
 use Picpocket\Wallet\Factory\WalletFactory;
 
@@ -22,7 +21,7 @@ use Picpocket\Wallet\Factory\WalletFactory;
  */
 class Wallet extends Model
 {
-    use HasUuids, HasFactory;
+    use HasFactory, HasUuids;
 
     public $incrementing = false;
 
@@ -32,17 +31,15 @@ class Wallet extends Model
         'id',
         'name',
         'account_id',
-        'balance'
+        'balance',
     ];
 
     protected $casts = [
-        'balance' => 'integer'
+        'balance' => 'integer',
     ];
 
     /**
      * Creates a new factory instance for the Wallet model.
-     *
-     * @return WalletFactory
      */
     protected static function newFactory(): WalletFactory
     {
@@ -51,9 +48,6 @@ class Wallet extends Model
 
     /**
      * Checks if the wallet has sufficient balance.
-     *
-     * @param int $amount
-     * @return bool
      */
     public function hasBalance(int $amount): bool
     {

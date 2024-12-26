@@ -16,6 +16,8 @@ use Picpocket\Account\Model\Account;
  * Author: Victor Silva
  * Email: dev.jvictor@gmail.com
  * GitHub: github.com/golden-sheep
+ *
+ * @template TModel of \Illuminate\Database\Eloquent\Model
  */
 interface AccountActionInterface
 {
@@ -25,8 +27,8 @@ interface AccountActionInterface
      * Delegates the operation to the repository layer to fetch
      * the account by its unique identifier.
      *
-     * @param string $accountId The unique identifier of the account.
+     * @param  string  $accountId  The unique identifier of the account.
      * @return Account The account model instance.
      */
-    public function findById(string $accountId): Account;
+    public function findById(string $accountId): ?Account;
 }

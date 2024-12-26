@@ -17,23 +17,26 @@ use Picpocket\Account\Repository\AccountRepositoryInterface;
  * Author: Victor Silva
  * Email: dev.jvictor@gmail.com
  * GitHub: github.com/golden-sheep
+ *
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ *
+ * @implements AccountActionInterface<\Picpocket\Account\Model\Account>
  */
 class AccountAction implements AccountActionInterface
 {
     /**
      * AccountAction constructor.
      *
-     * @param AccountRepositoryInterface $accountRepository Repository for interacting with account data.
+     * @param  AccountRepositoryInterface  $accountRepository  Repository for interacting with account data.
      */
     public function __construct(
         private readonly AccountRepositoryInterface $accountRepository
-    ) {
-    }
+    ) {}
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
-    public function findById(string $accountId): Account
+    public function findById(string $accountId): ?Account
     {
         return $this->accountRepository->findById($accountId);
     }

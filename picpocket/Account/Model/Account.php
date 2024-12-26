@@ -1,9 +1,11 @@
 <?php
+
 namespace Picpocket\Account\Model;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use PicPocket\Account\Enums\AccountTypeEnum;
 use Picpocket\Account\Factory\AccountFactory;
 use Picpocket\Customer\Model\Customer;
@@ -38,19 +40,19 @@ class Account extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'id',
         'customer_id',
         'type',
-        'cpf_cnpj'
+        'cpf_cnpj',
     ];
 
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'type' => AccountTypeEnum::class,
@@ -58,8 +60,6 @@ class Account extends Model
 
     /**
      * Creates a new factory instance for the model.
-     *
-     * @return AccountFactory
      */
     protected static function newFactory(): AccountFactory
     {
@@ -69,7 +69,7 @@ class Account extends Model
     /**
      * Defines the relationship between Account and Customer.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * * @return BelongsTo
      */
     public function customer()
     {
@@ -79,7 +79,7 @@ class Account extends Model
     /**
      * Checks if is retailer account.
      *
-     * @return bool
+     * @property AccountTypeEnum $type
      */
     public function isRetailerAccount(): bool
     {

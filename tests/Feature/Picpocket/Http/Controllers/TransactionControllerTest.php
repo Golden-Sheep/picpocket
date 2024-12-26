@@ -5,7 +5,7 @@ namespace Tests\Feature\Picpocket\Http\Controllers;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Mockery;
 use Picpocket\Api\External\PaymentGateways\PaymentGatewayInterface;
-use Picpocket\Notifications\Api\External\NotificationInterface;
+use Picpocket\Notifications\Api\External\NotificationServiceInterface;
 use Picpocket\Transaction\Enums\TransactionStatusEnum;
 use Picpocket\Wallet\Model\Wallet;
 use Tests\TestCase;
@@ -28,7 +28,7 @@ class TransactionControllerTest extends TestCase
      *
      * @return void
      */
-    public function testPostPayment()
+    public function test_post_payment()
     {
         // Arrange: Create mocks for external dependencies
         $picpayGatewayMock = Mockery::mock(PaymentGatewayInterface::class);
@@ -36,14 +36,14 @@ class TransactionControllerTest extends TestCase
             ->once()
             ->andReturn(true);
 
-        $picpayNotificationMock = Mockery::mock(NotificationInterface::class);
+        $picpayNotificationMock = Mockery::mock(NotificationServiceInterface::class);
         $picpayNotificationMock->shouldReceive('sendNotificationPayment')
             ->once()
             ->andReturn(true);
 
         // Replace mocked instances in the Laravel container
         $this->app->instance(PaymentGatewayInterface::class, $picpayGatewayMock);
-        $this->app->instance(NotificationInterface::class, $picpayNotificationMock);
+        $this->app->instance(NotificationServiceInterface::class, $picpayNotificationMock);
 
         // Arrange: Create payer and payee wallets with initial balances
         $payer = Wallet::factory()->customer()->create(['balance' => 10_00]);

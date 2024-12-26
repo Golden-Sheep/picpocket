@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Picpocket\Transaction\Http\Requests\CreateTransactionRequest;
-use Picpocket\Transaction\Services\TransactionServiceInterface;
 use Picpocket\Transaction\Services\Exceptions\TransactionServiceException;
+use Picpocket\Transaction\Services\TransactionServiceInterface;
 
 /**
  * Class TransactionController
@@ -22,19 +22,13 @@ class TransactionController extends Controller
 {
     /**
      * TransactionController constructor.
-     *
-     * @param TransactionServiceInterface $transactionService
      */
     public function __construct(
         private readonly TransactionServiceInterface $transactionService
-    ) {
-    }
+    ) {}
 
     /**
      * Handles the creation of a transaction.
-     *
-     * @param CreateTransactionRequest $request
-     * @return JsonResponse
      */
     public function createTransaction(
         CreateTransactionRequest $request

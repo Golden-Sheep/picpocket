@@ -17,8 +17,6 @@ class WalletActionFactory
 {
     /**
      * Creates a new instance of WalletAction.
-     *
-     * @return WalletAction
      */
     public function __invoke(): WalletAction
     {

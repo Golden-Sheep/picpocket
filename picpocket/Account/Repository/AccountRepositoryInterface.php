@@ -19,8 +19,8 @@ interface AccountRepositoryInterface
     /**
      * Find an account by its ID.
      *
-     * @inheritdoc
-     * @param string $accountId The unique identifier of the account.
+     *
+     * @param  string  $accountId  The unique identifier of the account.
      * @return Account The account model instance.
      */
     public function findById(string $accountId): Account;

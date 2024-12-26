@@ -15,20 +15,20 @@ use Picpocket\Customer\Model\Customer;
  * Author: Victor Silva
  * Email: dev.jvictor@gmail.com
  * GitHub: github.com/golden-sheep
+ *
+ * @extends Factory<Account>
  */
 class AccountFactory extends Factory
 {
     /**
      * The name of the model corresponding to the factory.
      *
-     * @var string
+     * @var class-string<Account>
      */
     protected $model = Account::class;
 
     /**
      * Define the default state of the Account model.
-     *
-     * @return array
      */
     public function definition(): array
     {
@@ -36,36 +36,32 @@ class AccountFactory extends Factory
             'id' => $this->faker->uuid(),
             'customer_id' => Customer::factory(),
             'type' => AccountTypeEnum::PHYSICAL,
-            'cpf_cnpj' => $this->faker->numerify('###########')
+            'cpf_cnpj' => $this->faker->numerify('###########'),
         ];
     }
 
     /**
      * Define the state for a legal ("Pessoa Jurídica") account.
-     *
-     * @return self
      */
-    public function pj(): self
+    public function setPj(): self
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function () {
             return [
                 'type' => AccountTypeEnum::LEGAL,
-                'cpf_cnpj' => $this->faker->numerify('##############')
+                'cpf_cnpj' => $this->faker->numerify('##############'),
             ];
         });
     }
 
     /**
      * Define the state for a physical ("Pessoa Física") account.
-     *
-     * @return self
      */
-    public function pf(): self
+    public function setPf(): self
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function () {
             return [
                 'type' => AccountTypeEnum::PHYSICAL,
-                'cpf_cnpj' => $this->faker->numerify('###########')
+                'cpf_cnpj' => $this->faker->numerify('###########'),
             ];
         });
     }

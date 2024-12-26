@@ -19,8 +19,6 @@ class TransactionRouteProvider extends RouteServiceProvider
 {
     /**
      * Map the transaction routes.
-     *
-     * @return void
      */
     public function map(): void
     {

@@ -15,11 +15,9 @@ class PicpayGatewayFactory
 {
     /**
      * Creates a new instance of the PaymentGateway.
-     *
-     * @return PaymentGateway
      */
     public function __invoke(): PaymentGateway
     {
-        return new PaymentGateway();
+        return new PaymentGateway;
     }
 }

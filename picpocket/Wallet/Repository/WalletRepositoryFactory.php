@@ -15,11 +15,9 @@ class WalletRepositoryFactory
 {
     /**
      * Creates a new instance of WalletRepository.
-     *
-     * @return WalletRepository
      */
     public function __invoke(): WalletRepository
     {
-        return new WalletRepository();
+        return new WalletRepository;
     }
 }

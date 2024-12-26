@@ -15,11 +15,9 @@ class TransactionRepositoryFactory
 {
     /**
      * Creates a new instance of TransactionRepository.
-     *
-     * @return TransactionRepository
      */
     public function __invoke(): TransactionRepository
     {
-        return new TransactionRepository();
+        return new TransactionRepository;
     }
 }

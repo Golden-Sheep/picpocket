@@ -20,16 +20,13 @@ class TransactionAction implements TransactionActionInterface
 {
     /**
      * TransactionAction constructor.
-     *
-     * @param TransactionRepositoryInterface $transactionRepository
      */
     public function __construct(
         private readonly TransactionRepositoryInterface $transactionRepository
-    ) {
-    }
+    ) {}
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function startTransaction(CreateTransactionDTO $payload): Transaction
     {
@@ -37,7 +34,7 @@ class TransactionAction implements TransactionActionInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function updateTransactionStatus(string $transactionId, TransactionStatusEnum $status): bool
     {

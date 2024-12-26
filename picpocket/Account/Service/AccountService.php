@@ -2,6 +2,7 @@
 
 namespace Picpocket\Account\Service;
 
+use Exception;
 use Picpocket\Account\Action\AccountActionInterface;
 use PicPocket\Account\Enums\AccountTypeEnum;
 use Picpocket\Cache\Service\CacheServiceInterface;
@@ -21,17 +22,16 @@ class AccountService implements AccountServiceInterface
     /**
      * AccountService constructor.
      *
-     * @param CacheServiceInterface $cacheService Service for managing cached data.
-     * @param AccountActionInterface $actionInterface Service for interacting with account actions.
+     * @param  CacheServiceInterface  $cacheService  Service for managing cached data.
+     * @param  AccountActionInterface  $actionInterface  Service for interacting with account actions.
      */
     public function __construct(
-        private readonly CacheServiceInterface  $cacheService,
+        private readonly CacheServiceInterface $cacheService,
         private readonly AccountActionInterface $actionInterface
-    ) {
-    }
+    ) {}
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function isAccountRetailer(string $accountId): bool
     {
@@ -41,8 +41,8 @@ class AccountService implements AccountServiceInterface
             $account = $this->actionInterface->findById($accountId);
 
             // Throw an exception if the account does not exist
-            if (!$account) {
-                throw new \Exception("Account not found for ID: {$accountId}");
+            if (! $account) {
+                throw new Exception("Account not found for ID: {$accountId}");
             }
 
             // Return the account type for caching

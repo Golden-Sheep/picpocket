@@ -3,10 +3,9 @@
 namespace Picpocket\Transaction\Services;
 
 use Illuminate\Support\Facades\DB;
-
 use Picpocket\Account\Service\AccountServiceInterface;
 use Picpocket\Api\External\PaymentGateways\PaymentGatewayInterface;
-use Picpocket\Notifications\Api\External\NotificationInterface;
+use Picpocket\Notifications\Api\External\NotificationServiceInterface;
 use Picpocket\Transaction\Actions\TransactionActionInterface;
 use Picpocket\Transaction\DTO\CreateTransactionDTO;
 use Picpocket\Transaction\Enums\TransactionStatusEnum;
@@ -28,72 +27,77 @@ use Psr\Log\LoggerInterface;
 class TransactionService implements TransactionServiceInterface
 {
     public function __construct(
-        private readonly WalletActionInterface      $walletAction,
+        private readonly WalletActionInterface $walletAction,
         private readonly TransactionActionInterface $transactionAction,
-        private readonly PaymentGatewayInterface    $picpayGatewayAPI,
-        private readonly NotificationInterface      $picpayNotificationAPI,
+        private readonly PaymentGatewayInterface $picpayGatewayAPI,
+        private readonly NotificationServiceInterface $picpayNotificationAPI,
         private readonly LoggerInterface $logger,
         private readonly AccountServiceInterface $accountService
-    )
-    {
-    }
+    ) {}
 
     /**
-     * @inheritdoc
+     * Handle the transaction creation and processing.
+     *
+     * @throws TransactionServiceException
      */
     public function handle(CreateTransactionDTO $transactionDTO): bool
     {
         try {
             $this->logger->info('Starting transaction process', ['transactionDTO' => $transactionDTO]);
-            // Initial validations
-            $payerWallet = $this->walletAction->findById($transactionDTO->payerId);
+
+            $payerWallet = $this->getWallet($transactionDTO->payerId, 'Payer wallet not found');
             $this->validatePaymentConditions($payerWallet, $transactionDTO);
 
-            // Execute the database transaction
-            return DB::transaction(function () use ($payerWallet, $transactionDTO) {
-                $payeeWallet = $this->walletAction->findById($transactionDTO->payeeId);
+            return DB::transaction(fn () => $this->executeTransactionFlow($payerWallet, $transactionDTO));
+        } catch (TransactionServiceException $exception) {
+            $this->logAndRethrow('Transaction failed', $exception, $transactionDTO);
 
-                // Start the transaction
-                $transaction = $this->createTransaction($transactionDTO);
+            return false;
+        } catch (\Exception $exception) {
+            $this->logAndRethrow('An unexpected error occurred during the transaction', $exception, $transactionDTO);
 
-                // Perform financial operations
-                $this->processTransaction($payerWallet, $payeeWallet, $transactionDTO->amount);
-
-                // Update transaction status
-                $this->completeTransaction($transaction);
-
-                // Authorize external payment
-                $this->authorizePayment();
-
-                // Send notification
-                $this->sendPaymentNotification();
-
-                return true;
-            });
-        } catch (TransactionServiceException $e) {
-            // Log specific exceptions related to transactions
-            $this->logger->error('Transaction failed', [
-                'exception' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'transactionDTO' => $transactionDTO
-            ]);
-
-            throw $e;
-        } catch (\Exception $e) {
-            // Log unexpected exceptions
-            $this->logger->error('An unexpected error occurred during the transaction', [
-                'exception' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'transactionDTO' => $transactionDTO
-            ]);
-
-            // Rethrow the exception to escalate or handle gracefully
-            throw $e;
+            return false;
         }
     }
 
     /**
-     * Validates payment conditions.
+     * Retrieve the wallet by ID or throw an exception if not found.
+     *
+     * @throws TransactionServiceException
+     */
+    private function getWallet(string $walletId, string $errorMessage): Wallet
+    {
+        $wallet = $this->walletAction->findById($walletId);
+
+        if (! $wallet) {
+            throw new TransactionServiceException($errorMessage);
+        }
+
+        return $wallet;
+    }
+
+    /**
+     * Execute the entire transaction flow.
+     *
+     * @throws TransactionServiceException
+     */
+    private function executeTransactionFlow(Wallet $payerWallet, CreateTransactionDTO $transactionDTO): bool
+    {
+        $payeeWallet = $this->getWallet($transactionDTO->payeeId, 'Payee wallet not found');
+
+        $transaction = $this->createTransaction($transactionDTO);
+        $this->processTransaction($payerWallet, $payeeWallet, $transactionDTO->amount);
+        $this->completeTransaction($transaction);
+        $this->authorizePayment();
+        $this->sendPaymentNotification();
+
+        return true;
+    }
+
+    /**
+     * Validate payment conditions before proceeding with the transaction.
+     *
+     * @throws TransactionServiceException
      */
     private function validatePaymentConditions(Wallet $payerWallet, CreateTransactionDTO $transactionDTO): void
     {
@@ -101,23 +105,24 @@ class TransactionService implements TransactionServiceInterface
             throw TransactionServiceException::retailerNotAllowedToPay();
         }
 
-        if (!$payerWallet->hasBalance($transactionDTO->amount)) {
+        if (! $payerWallet->hasBalance($transactionDTO->amount)) {
             throw TransactionServiceException::outOfPocket();
         }
     }
 
     /**
-     * Creates a new transaction in the database.
+     * Create a new transaction record.
      */
     private function createTransaction(CreateTransactionDTO $transactionDTO): Transaction
     {
         $transaction = $this->transactionAction->startTransaction($transactionDTO);
         $this->logger->info('Transaction created', ['transactionId' => $transaction->getKey()]);
+
         return $transaction;
     }
 
     /**
-     * Processes debit and credit operations between wallets.
+     * Process the transaction by transferring funds between wallets.
      */
     private function processTransaction(Wallet $payerWallet, Wallet $payeeWallet, int $amount): void
     {
@@ -132,7 +137,7 @@ class TransactionService implements TransactionServiceInterface
     }
 
     /**
-     * Marks the transaction as completed.
+     * Mark the transaction as completed.
      */
     private function completeTransaction(Transaction $transaction): void
     {
@@ -141,24 +146,44 @@ class TransactionService implements TransactionServiceInterface
     }
 
     /**
-     * Authorizes the payment via a third-party gateway.
+     * Authorize the payment via the payment gateway.
+     *
+     * @throws TransactionServiceException
      */
     private function authorizePayment(): void
     {
-        if (!$this->picpayGatewayAPI->authorizePayment()) {
+        if (! $this->picpayGatewayAPI->authorizePayment()) {
             throw TransactionServiceException::notAuthorizedByGateway($this->picpayGatewayAPI);
         }
         $this->logger->info('Payment authorized');
     }
 
     /**
-     * Sends a payment notification.
+     * Send a notification about the payment.
+     *
+     * @throws TransactionServiceException
      */
     private function sendPaymentNotification(): void
     {
-        if (!$this->picpayNotificationAPI->sendNotificationPayment()) {
+        if (! $this->picpayNotificationAPI->sendNotificationPayment()) {
             throw TransactionServiceException::paymentMessageNotSent($this->picpayNotificationAPI);
         }
         $this->logger->info('Notification sent');
+    }
+
+    /**
+     * Log the exception and rethrow it.
+     *
+     * @throws \Exception
+     */
+    private function logAndRethrow(string $message, \Throwable $exception, CreateTransactionDTO $transactionDTO): void
+    {
+        $this->logger->error($message, [
+            'exception' => $exception->getMessage(),
+            'trace' => $exception->getTraceAsString(),
+            'transactionDTO' => $transactionDTO,
+        ]);
+
+        throw $exception;
     }
 }

@@ -37,7 +37,7 @@ class Customer extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'id',
@@ -45,13 +45,11 @@ class Customer extends Model
         'email',
         'password',
         'phone',
-        'address'
+        'address',
     ];
 
     /**
      * Creates a new factory instance for the model.
-     *
-     * @return CustomerFactory
      */
     protected static function newFactory(): CustomerFactory
     {

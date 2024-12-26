@@ -20,11 +20,10 @@ use Illuminate\Support\Facades\Cache;
 class CacheService implements CacheServiceInterface
 {
     public function __construct(
-    )
-    {
-    }
+    ) {}
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function remember(string $key, int $ttl, callable $callback): mixed
     {
@@ -32,7 +31,7 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function get(string $key): mixed
     {
@@ -40,7 +39,7 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function put(string $key, mixed $value, int $ttl): void
     {
@@ -48,7 +47,7 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function forget(string $key): void
     {

@@ -17,8 +17,6 @@ class TransactionActionFactory
 {
     /**
      * Creates a new instance of TransactionAction.
-     *
-     * @return TransactionAction
      */
     public function __invoke(): TransactionAction
     {

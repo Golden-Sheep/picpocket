@@ -26,14 +26,14 @@ class NotificationServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bind the NotificationInterface to its implementation.
+     * Bind the NotificationServiceInterface to its implementation.
      *
      * @return void
      */
     protected function bindNotification()
     {
-        $this->app->bind(NotificationInterface::class, function () {
-            return (new PicpayNotificationServiceFactory())();
+        $this->app->bind(NotificationServiceInterface::class, function () {
+            return (new PicpayNotificationServiceFactory)();
         });
     }
 }

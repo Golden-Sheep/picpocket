@@ -16,14 +16,13 @@ readonly class CreateTransactionDTO
     /**
      * CreateTransactionDTO constructor.
      *
-     * @param string $payerId ID of the payer.
-     * @param string $payeeId ID of the payee.
-     * @param int    $amount  Amount of the transaction.
+     * @param  string  $payerId  ID of the payer.
+     * @param  string  $payeeId  ID of the payee.
+     * @param  int  $amount  Amount of the transaction.
      */
     public function __construct(
         public string $payerId,
         public string $payeeId,
-        public int    $amount
-    ) {
-    }
+        public int $amount
+    ) {}
 }

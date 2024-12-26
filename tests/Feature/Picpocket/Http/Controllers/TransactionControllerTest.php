@@ -58,7 +58,7 @@ class TransactionControllerTest extends TestCase
         ]);
 
         // Assert: Verify the response and database state
-        $response->assertNoContent();
+        $response->assertCreated();
 
         // Check if the transaction was recorded
         $this->assertDatabaseHas('transactions', [

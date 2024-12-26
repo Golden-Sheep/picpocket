@@ -7,5 +7,7 @@ return [
     \Picpocket\Wallet\Providers\WalletProvider::class,
     \Picpocket\Api\External\PaymentGateways\PayamentGatewayProvider::class,
     \Picpocket\Notifications\Api\External\NotificationServiceProvider::class,
-    \Picpocket\Log\Provider\LoggerProvider::class
+    \Picpocket\Log\Provider\LoggerProvider::class,
+    \Picpocket\Cache\Provider\CacheProvider::class,
+    \Picpocket\Account\Providers\AccountProvider::class,
 ];

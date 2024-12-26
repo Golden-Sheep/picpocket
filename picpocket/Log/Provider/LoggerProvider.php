@@ -3,8 +3,8 @@
 namespace Picpocket\Log\Provider;
 
 use Carbon\Laravel\ServiceProvider;
-use Picpocket\Log\LoggerService;
-use Picpocket\Log\LoggerServiceFactory;
+use PicPocket\Log\Service\LoggerService;
+use PicPocket\Log\Service\LoggerServiceFactory;
 
 /**
  * Class LoggerProvider

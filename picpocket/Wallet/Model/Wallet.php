@@ -69,14 +69,4 @@ class Wallet extends Model
     {
         return $this->belongsTo(Account::class, 'account_id', 'id');
     }
-
-    /**
-     * Checks if the wallet is associated with a retailer account.
-     *
-     * @return bool
-     */
-    public function isRetailerAccount(): bool
-    {
-        return $this->account && $this->account->type === AccountTypeEnum::LEGAL;
-    }
 }

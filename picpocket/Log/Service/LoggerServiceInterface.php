@@ -1,6 +1,6 @@
 <?php
 
-namespace Picpocket\Log;
+namespace PicPocket\Log\Service;
 
 /**
  * Interface LoggerServiceInterface

@@ -2,6 +2,7 @@
 
 namespace Picpocket\Transaction\Services;
 
+use Picpocket\Account\Service\AccountServiceInterface;
 use Picpocket\Api\External\PaymentGateways\PaymentGatewayInterface;
 use Picpocket\Notifications\Api\External\NotificationInterface;
 use Picpocket\Transaction\Actions\TransactionActionInterface;
@@ -31,7 +32,8 @@ class TransactionServiceFactory
         $paymentGateway = app(PaymentGatewayInterface::class);
         $picpayNotification = app(NotificationInterface::class);
         $logger = app(LoggerInterface::class);
+        $accountService = app(AccountServiceInterface::class);
 
-        return new TransactionService($walletAction, $transactionAction, $paymentGateway, $picpayNotification, $logger);
+        return new TransactionService($walletAction, $transactionAction, $paymentGateway, $picpayNotification, $logger, $accountService);
     }
 }

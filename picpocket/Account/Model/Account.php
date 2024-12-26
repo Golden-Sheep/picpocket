@@ -75,4 +75,14 @@ class Account extends Model
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
+
+    /**
+     * Checks if is retailer account.
+     *
+     * @return bool
+     */
+    public function isRetailerAccount(): bool
+    {
+        return $this->type === AccountTypeEnum::LEGAL;
+    }
 }

@@ -4,6 +4,7 @@ namespace Picpocket\Transaction\Services;
 
 use Illuminate\Support\Facades\DB;
 
+use Picpocket\Account\Service\AccountServiceInterface;
 use Picpocket\Api\External\PaymentGateways\PaymentGatewayInterface;
 use Picpocket\Notifications\Api\External\NotificationInterface;
 use Picpocket\Transaction\Actions\TransactionActionInterface;
@@ -31,7 +32,8 @@ class TransactionService implements TransactionServiceInterface
         private readonly TransactionActionInterface $transactionAction,
         private readonly PaymentGatewayInterface    $picpayGatewayAPI,
         private readonly NotificationInterface      $picpayNotificationAPI,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly AccountServiceInterface $accountService
     )
     {
     }
@@ -95,7 +97,7 @@ class TransactionService implements TransactionServiceInterface
      */
     private function validatePaymentConditions(Wallet $payerWallet, CreateTransactionDTO $transactionDTO): void
     {
-        if ($payerWallet->isRetailerAccount()) {
+        if ($this->accountService->isAccountRetailer($payerWallet->account_id)) {
             throw TransactionServiceException::retailerNotAllowedToPay();
         }
 

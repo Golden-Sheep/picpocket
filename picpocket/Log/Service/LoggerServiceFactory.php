@@ -1,11 +1,11 @@
 <?php
 
-namespace Picpocket\Log;
+namespace PicPocket\Log\Service;
 
 /**
  * Class PicpayNotificationServiceFactory
  *
- * Factory for creating instances of the PicpayNotificationService class.
+ * Factory for creating instances of the LoggerService class.
  *
  * Author: Victor Silva
  * Email: dev.jvictor@gmail.com
@@ -14,7 +14,7 @@ namespace Picpocket\Log;
 class LoggerServiceFactory
 {
     /**
-     * Creates a new instance of the PicpayNotificationService.
+     * Creates a new instance of the LoggerService.
      *
      * @return LoggerService
      */

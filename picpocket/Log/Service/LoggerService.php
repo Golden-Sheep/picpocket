@@ -1,6 +1,6 @@
 <?php
 
-namespace Picpocket\Log;
+namespace PicPocket\Log\Service;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
